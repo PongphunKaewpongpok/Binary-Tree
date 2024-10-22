@@ -1,18 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .project-title {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .abstract {
+            background-color: #ecf0f1;
+            border-left: 5px solid #2980b9;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .project-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .project-details img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-details .code-snippet {
+            flex: 1 1 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: left;
+        }
+
+        .code-snippet pre {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello Binary Tree</h1>
-    <h2>บทคัดย่อ</h2>
-    <p>โปรเจกต์เกม Binary Tree ทำขึ้นเพื่อใช้สำหรับรายวิชา Physical Computing 
-        ซึ่งเป็นเกมที่ออกแบบมาเพื่อใช้เซ็นเซอร์วัดอุณหภูมิ (Temperature Sensor) 
-        ในการตรวจจับอุณหภูมิและแสดงผลการเปลี่ยนแปลงของอุณหภูมิภายในเกม 
-        ในเกมจะมีต้นไม้ซึ่งพัฒนาการของต้นไม้ขึ้นอยู่กับอุณหภูมิที่เซ็นเซอร์ตรวจจับได้
-    </p>
-    
+
+    <header>
+        <h1>Binary Tree</h1>
+    </header>
+
+    <div class="container">
+        <h2 class="project-title">Project: Binary Tree</h2>
+
+        <section class="abstract">
+            <h3>บทคัดย่อ</h3>
+            <p>โปรเจกต์เกม Binary Tree ทำขึ้นเพื่อใช้สำหรับรายวิชา Physical Computing ซึ่งเป็นเกมที่ออกแบบมาเพื่อใช้เซ็นเซอร์วัดอุณหภูมิ (Temperature Sensor) ในการตรวจจับอุณหภูมิและแสดงผลการเปลี่ยนแปลงของอุณหภูมิภายในเกม ในเกมจะมีต้นไม้ซึ่งพัฒนาการของต้นไม้ขึ้นอยู่กับอุณหภูมิที่เซ็นเซอร์ตรวจจับได้</p>
+        </section>
+
+        <section class="project-details">
+            <div class="code-snippet">
+                <h3>โค้ดตัวอย่าง</h3>
+                <pre>
+# C Code in Binary Tree
+                </pre>
+            </div>
+
+            <div class="code-snippet">
+                <h3>ภาพตัวอย่างการทำงาน</h3>
+                <img src="https://via.placeholder.com/600x400" alt="Project screenshot">
+            </div>
+        </section>
+    </div>
+    <footer>
+        <p>&copy; Binary Tree</p>
+    </footer>
+
 </body>
 </html>
