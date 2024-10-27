@@ -8,7 +8,7 @@
 ## อุปกรณ์ที่ใช้
 
 * #### Arduino UNO R4 WiFi
-* <img src="https://cq.lnwfile.com/_/cq/_raw/9z/1a/gr.png" width="100" height="100" alt="uno r4" />
+* <img src="https://cq.lnwfile.com/_/cq/_raw/9z/1a/gr.png" width="500" height="500" alt="uno r4" />
 * #### Breadboard
 * #### Temperature Sensor
 
