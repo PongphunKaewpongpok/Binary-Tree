@@ -8,8 +8,13 @@
 ## อุปกรณ์ที่ใช้
 
 * #### Arduino UNO R4 WiFi
+* <img src="[https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/python-colored.svg](https://www.arduitronics.com/product/5718/arduino-uno-r4-wifi-%E0%B9%81%E0%B8%97%E0%B9%89-100-italy)" alt="uno r4" />
 * #### Breadboard
 * #### Temperature Sensor
+
+## Video
+
+## Poster
 
 ## Library ที่ใช้
 * #### Raylib.h
