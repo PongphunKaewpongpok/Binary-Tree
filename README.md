@@ -18,7 +18,7 @@
   https://psrct.github.io/
 
 ## Poster
-  <img src="https://github.com/PongphunKaewpongpok/Binary-Tree/blob/main/image/poster.jpg?raw=true" width="500" height="500" alt="poster />
+  <img src="https://github.com/PongphunKaewpongpok/Binary-Tree/blob/main/image/poster.jpg?raw=true" width="500" height="500" alt="poster" />
 ## Video
 
 ## Library ที่ใช้
