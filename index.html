@@ -135,13 +135,261 @@ float GetRotation(Vector2 mouse_pos, Vector2 point, Vector2 origin);
 bool CheckCollisionPointRectangleRotated(Vector2 point, Rectangle rect, Vector2 origin, float rotation);
 bool colorEqualsNoAlpha(Color color1, Color color2);
                         
-                        #endif
+#endif
                     </pre>
+
+                    <pre>
+//data.h
+
+#ifndef DATA_H
+#define DATA_H
+                        
+// Permanently Token
+extern int applesToken;
+                        
+// Temporary Token
+extern double waterToken;
+extern double sunlightToken;
+                        
+void displayTokens();
+                        
+#endif
+                    </pre>
+
+                    <pre>
+//declaration.h
+
+#ifndef DECLARATION_H
+#define DECLARATION_H
+
+#include "raylib.h"
+
+extern const int SCREENWIDTH;
+extern const int SCREENHEIGHT;
+
+extern Texture2D TEXTURE_BUTTON_ADD_BRANCH;
+extern Texture2D TEXTURE_BUTTON_ADD_LEAVE;
+extern Texture2D TEXTURE_BUTTON_ADD_FLOWER;
+extern Texture2D TEXTURE_BUTTON_ADD_FRUIT;
+extern Texture2D TEXTURE_BUTTON_REMOVE_BRANCH;
+extern Texture2D TEXTURE_BUTTON_REMOVE_LEAVE;
+extern Texture2D TEXTURE_BUTTON_REMOVE_FLOWER;
+extern Texture2D TEXTURE_BUTTON_REMOVE_FRUIT;
+extern Texture2D TEXTURE_BUTTON_CANT_ADD_BRANCH;
+extern Texture2D TEXTURE_BUTTON_CANT_REMOVE_BRANCH;
+extern Texture2D TEXTURE_BUTTON_CANT_ADD_LEAVE;
+extern Texture2D TEXTURE_BUTTON_CANT_ADD_FLOWER;
+extern Texture2D TEXTURE_BUTTON_CANT_ADD_FRUIT;
+
+extern Texture2D TEXTURE_BRANCH;
+extern Texture2D TEXTURE_BRANCH_SELECTED;
+extern Texture2D TEXTURE_GROUND;
+extern Texture2D TEXTURE_CLOUD;
+extern Texture2D TEXTURE_RAINDROP;
+extern Texture2D TEXTURE_SNOWFLAKE;
+extern Texture2D TEXTURE_TOKEN_BACKGROUND;
+extern Texture2D TEXTURE_ICON_SETTING;
+
+extern Texture2D TEXTURE_APPLE_TOKEN;
+extern Texture2D TEXTURE_WATER_TOKEN;
+extern Texture2D TEXTURE_SUN_TOKEN;
+
+extern Texture2D TEXTURE_ICON_DAYTIME;
+extern Texture2D TEXTURE_ICON_NIGHTTIME;
+
+extern Vector2 mouse_pos;
+
+void initTexture2D();
+void unloadAllTexture2D();
+
+#endif
+                    </pre>
+
+                    <pre>
+//drag_screen.h
+
+#ifndef DRAG_SCREEN_H
+#define DRAG_SCREEN_H
+
+#include "raylib.h"
+#include "stdbool.h"
+
+extern bool drag_screen;
+extern int drag_frame_count;
+
+extern Vector2 drag_init_pos;
+
+extern Vector2 ground_1_pos;
+extern Vector2 ground_2_pos;
+extern Vector2 cloud_1_pos;
+extern Vector2 cloud_2_pos;
+
+extern Vector2 screen_pos;
+
+void drawing_map();
+void drag_screen_cal(); // V V V  Main Function to called below function  V V V
+
+void ground_moving(double temX, double temY); // Update ground element
+void cloud_moving(double temX, double temY); // Update cloud element
+void update_screen_pos(double temX, double temY); // Update screen position
+float getGroundY();
+float getCloudY();
+
+#endif
+                    </pre>
+
+                    <pre>
+//event.h
+
+#ifndef EVENT_H
+#define EVENT_H
+
+#endif
+                    </pre>
+
+                    <pre>
+//screen_effect.h
+
+#ifndef SCREEN_EFFECT_H
+#define SCREEN_EFFECT_H
+
+extern int fading_time;
+extern int fade_alpha;
+extern short fade_direction;
+
+void update_fading();
+void fade_screen();
+void updateLightSource();
+
+#endif
+                    </pre>
+
+                    <pre>
+//sound.h
+
+#ifndef SOUND_H
+#define SOUND_H
+
+#include "raylib.h"
+
+extern Music BGM_GARDEN_DREAMS;
+extern Music BGM_GARDEN_OF_FROST;
+extern Music BGM_MIDNIGHT_GARDEN;
+extern Music BGM_WHISPERS_OF_THE_RAIN;
+
+void initMusic();
+void unloadAllMusic();
+void updateMusic();
+
+#endif
+                    </pre>
+
+                    <pre>
+//temperature.h
+
+#ifndef TEMPERATURE_H
+#define TEMPERATURE_H
+
+#include <stdbool.h>
+
+bool setupSerial(char *portName);
+bool startArduinoCommunication();
+void disableHandle();
+
+bool getStatus();
+float getCelsius();
+void displayTemperature();
+
+#endif
+                    </pre>
+
+                    <pre>
+//time.h
+
+#ifndef TIME_H
+#define TIME_H
+
+#include <stdbool.h>
+
+typedef struct {
+    int minutes;
+    int hours;
+    int days;
+} Time;
+
+extern int gameFrame;
+
+void timeStart();
+void updateTime();
+void displayDay();
+Time getTime();
+bool isDay();
+
+#endif
+                    </pre>
+
+                    <pre>
+//weather.h
+
+#ifndef WEATHER_H
+#define WEATHER_H
+
+#include "raylib.h"
+
+extern const int WEATHER_SUNNY_ID;
+extern const int WEATHER_RAINNING_ID;
+extern const int WEATHER_SNOWING_ID;
+
+extern int current_weather_id;
+extern Color background_color;
+
+void weatherStart();
+void updateWeather();
+void changeWeather(int weatherID);
+void updateSummonRain();
+void updateSummonSnowflake();
+
+#endif
+                    </pre>
+
                 </div>
         
                 <div class="col-md-6 code-snippet">
                     <h3>ภาพตัวอย่างการทำงาน</h3>
                     <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid2">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid3">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid4">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid5">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid6">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid7">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid8">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid9">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid10">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid11">
+
+                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid12">
                 </div>
             </div>
         </section>
