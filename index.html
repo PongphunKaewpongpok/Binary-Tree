@@ -26,373 +26,113 @@
         <section class="project-details">
             <div class="row">
                 <div class="col-md-6 code-snippet">
-                    <h3>โค้ดตัวอย่าง</h3>
+                    <div class="bg-success text-white p-2 mb-2">
+                        <h3 class="m-0">โค้ดตัวอย่าง</h3>
+                    </div>
                     <pre>
-//Basic Math.h
+//main.c
 
-#ifndef BASIC_MATH_H
-#define BASIC_MATH_H
+#include "temperature.h"
 
 #include "raylib.h"
+#include "stdlib.h"
+#include "stdbool.h"
+#include "stdio.h"
 
-double min(double a, double b);
-double max(double a, double b);
-float getRotation(float x1, float y1, float x2, float y2);
-float radiansToDegrees(float radians);
-float degreesToRadians(float degrees);
-Vector2 getMovingPoint(float x1, float y1, float rotation, float distance);
-int randomNumber(int min, int max);
-void shortFormToken(char *text, int tokenCount);
+#include "time.h"
+#include "declaration.h"
+#include "sound.h"
+#include "screen_effect.h"
+#include "drag_screen.h"
+#include "branch.h"
+#include "weather.h"
+#include "data.h"
+#include "temperature.h"
+#include "string.h"
 
-#endif
-                    </pre>
+int main(void) {
+    char *portName = "\\\\.\\COM3";
+    printf("%s", setupSerial(portName) ? "Connected to COM3.\n" : "Failed to connect to COM3.\n");
 
-                    <pre>
-//branch.h
+    char temperatureText[10];
 
-#ifndef BRANCH_H
-#define BRANCH_H
+    timeStart();
+    InitWindow(SCREENWIDTH, SCREENHEIGHT, "Binary Tree");
+    InitAudioDevice();
+    SetTargetFPS(60);
+    SetExitKey(0); // Avoid exit by pressing ESC button
 
-#include "raylib.h" // Needed for [Vector2] type
-#include <stdbool.h> // Needed for [bool] type
+    initTexture2D();
+    initMusic();
+    branchStart();
+    branchAdd((Vector2){780, 725}, 0.0f, NULL);
 
-typedef struct {
-    short animal_max;
-} Building;
+    fade_screen();
+    // PlaySound(BGM_GARDEN_DREAMS);
 
-typedef struct {
-    int id;
-    Vector2 pos;
-} Product;
-
-struct Branch;
-typedef struct Branch {
-    int id;
-
-    Vector2 pos;
-
-    struct Branch* parent;
-    struct Branch* child_first;
-    struct Branch* child_second;
-
-    bool is_leaves;
-    bool is_flower;
-    bool is_fruit;
-
-    struct Building* type_building;
-
-    short animal_count;
+    weatherStart();
     
-    double size;
+    while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_R)) {
+            changeWeather(WEATHER_RAINNING_ID);
+        } else if (IsKeyPressed(KEY_S)) {
+            changeWeather(WEATHER_SNOWING_ID);
+        }
+        mouse_pos = GetMousePosition();
+        updateMusic();
 
-    float rotation;
-} Branch;
+        BeginDrawing();     // Starting Draw Elements This Frame.
 
-extern Branch* selectedBranch;
+        drag_screen_cal();  // Calculate drawing_map()
+        updateWeather();
+        drawing_map();      // Starting Draw Ground & Cloud
 
-extern Branch* branch_list;
-extern int branch_count;
+        updateBranch();
+        updateLightSource();
+        update_fading();
+        
+        displayDay();           // Display Current Day
+        displayTokens();        // Display Tokens
 
-extern Product* product_list;
-extern int product_count;
+        DrawText(temperatureText, 29, SCREENHEIGHT-71, 50, BLACK); // Shadow
+        DrawText(temperatureText, 25, SCREENHEIGHT-75, 50, getStatus() ? WHITE : RED); // Display Temperature
 
-void displayWarning();
+        gameFrame++;
+        if (gameFrame >= 60) {
+            gameFrame = 0;
+            updateTime();   // Update Time
+            if (getStatus()) {
+                sprintf(temperatureText, "%.2f °C", getCelsius());
+            } else {
+                strcpy(temperatureText, "Lost °C");
+                setupSerial(portName);
+            }
+        }
 
-void branchStart();
+        EndDrawing();       // Ending Drawing Elements This Frame.
+    }
 
-void updateBranchCreating();    // Updates branch that are during the creating
-void updateBranch();            // Updates branch that already exist
-void updateBranchMenu();        // Updates branch menu when selected
+    unloadAllTexture2D();
+    unloadAllMusic();
 
-void addBranchSize(float size);
-void branchAdd(Vector2 pos, float rotation, Branch* parent); // Build a branch after select the rotation
-void branchRemoveWarning(int id);                            /* Show how many branch will be disappear from remove this branch and
-                                                                player must click comfirm*/
-void branchRemoveConfirm(int id);                           // Remove a that branch and it child
-void branchSortID();                                        // Generating new ID after delete branch and clear old branch ID
-void branchCreating();                                      // Rotate the branch
-void branchCreatingCancel();                                // Cancel creating branch mode
-void branchSelecting(int frameCount);                       // Click to select branch
-int branchCounting(int id);                                  // For counting branch itself and descendants
+    disableHandle();
 
-void buildLeaves(int id);
-void buildFlower(int id);
-void buildBuilding(int id);
-
-#endif                        
+    CloseAudioDevice();
+    CloseWindow();
+    return 0;
+}
                     </pre>
-
-                    <pre>
-//custom_raylib.h
-
-#ifndef CUSTOM_RAYLIB_H
-#define CUSTOM_RAYLIB_H
-                            
-#include "raylib.h"
-#include "stdbool.h"
-                            
-float GetRotation(Vector2 mouse_pos, Vector2 point, Vector2 origin);
-bool CheckCollisionPointRectangleRotated(Vector2 point, Rectangle rect, Vector2 origin, float rotation);
-bool colorEqualsNoAlpha(Color color1, Color color2);
-                        
-#endif
-                    </pre>
-
-                    <pre>
-//data.h
-
-#ifndef DATA_H
-#define DATA_H
-                        
-// Permanently Token
-extern int applesToken;
-                        
-// Temporary Token
-extern double waterToken;
-extern double sunlightToken;
-                        
-void displayTokens();
-                        
-#endif
-                    </pre>
-
-                    <pre>
-//declaration.h
-
-#ifndef DECLARATION_H
-#define DECLARATION_H
-
-#include "raylib.h"
-
-extern const int SCREENWIDTH;
-extern const int SCREENHEIGHT;
-
-extern Texture2D TEXTURE_BUTTON_ADD_BRANCH;
-extern Texture2D TEXTURE_BUTTON_ADD_LEAVE;
-extern Texture2D TEXTURE_BUTTON_ADD_FLOWER;
-extern Texture2D TEXTURE_BUTTON_ADD_FRUIT;
-extern Texture2D TEXTURE_BUTTON_REMOVE_BRANCH;
-extern Texture2D TEXTURE_BUTTON_REMOVE_LEAVE;
-extern Texture2D TEXTURE_BUTTON_REMOVE_FLOWER;
-extern Texture2D TEXTURE_BUTTON_REMOVE_FRUIT;
-extern Texture2D TEXTURE_BUTTON_CANT_ADD_BRANCH;
-extern Texture2D TEXTURE_BUTTON_CANT_REMOVE_BRANCH;
-extern Texture2D TEXTURE_BUTTON_CANT_ADD_LEAVE;
-extern Texture2D TEXTURE_BUTTON_CANT_ADD_FLOWER;
-extern Texture2D TEXTURE_BUTTON_CANT_ADD_FRUIT;
-
-extern Texture2D TEXTURE_BRANCH;
-extern Texture2D TEXTURE_BRANCH_SELECTED;
-extern Texture2D TEXTURE_GROUND;
-extern Texture2D TEXTURE_CLOUD;
-extern Texture2D TEXTURE_RAINDROP;
-extern Texture2D TEXTURE_SNOWFLAKE;
-extern Texture2D TEXTURE_TOKEN_BACKGROUND;
-extern Texture2D TEXTURE_ICON_SETTING;
-
-extern Texture2D TEXTURE_APPLE_TOKEN;
-extern Texture2D TEXTURE_WATER_TOKEN;
-extern Texture2D TEXTURE_SUN_TOKEN;
-
-extern Texture2D TEXTURE_ICON_DAYTIME;
-extern Texture2D TEXTURE_ICON_NIGHTTIME;
-
-extern Vector2 mouse_pos;
-
-void initTexture2D();
-void unloadAllTexture2D();
-
-#endif
-                    </pre>
-
-                    <pre>
-//drag_screen.h
-
-#ifndef DRAG_SCREEN_H
-#define DRAG_SCREEN_H
-
-#include "raylib.h"
-#include "stdbool.h"
-
-extern bool drag_screen;
-extern int drag_frame_count;
-
-extern Vector2 drag_init_pos;
-
-extern Vector2 ground_1_pos;
-extern Vector2 ground_2_pos;
-extern Vector2 cloud_1_pos;
-extern Vector2 cloud_2_pos;
-
-extern Vector2 screen_pos;
-
-void drawing_map();
-void drag_screen_cal(); // V V V  Main Function to called below function  V V V
-
-void ground_moving(double temX, double temY); // Update ground element
-void cloud_moving(double temX, double temY); // Update cloud element
-void update_screen_pos(double temX, double temY); // Update screen position
-float getGroundY();
-float getCloudY();
-
-#endif
-                    </pre>
-
-                    <pre>
-//event.h
-
-#ifndef EVENT_H
-#define EVENT_H
-
-#endif
-                    </pre>
-
-                    <pre>
-//screen_effect.h
-
-#ifndef SCREEN_EFFECT_H
-#define SCREEN_EFFECT_H
-
-extern int fading_time;
-extern int fade_alpha;
-extern short fade_direction;
-
-void update_fading();
-void fade_screen();
-void updateLightSource();
-
-#endif
-                    </pre>
-
-                    <pre>
-//sound.h
-
-#ifndef SOUND_H
-#define SOUND_H
-
-#include "raylib.h"
-
-extern Music BGM_GARDEN_DREAMS;
-extern Music BGM_GARDEN_OF_FROST;
-extern Music BGM_MIDNIGHT_GARDEN;
-extern Music BGM_WHISPERS_OF_THE_RAIN;
-
-void initMusic();
-void unloadAllMusic();
-void updateMusic();
-
-#endif
-                    </pre>
-
-                    <pre>
-//temperature.h
-
-#ifndef TEMPERATURE_H
-#define TEMPERATURE_H
-
-#include <stdbool.h>
-
-bool setupSerial(char *portName);
-bool startArduinoCommunication();
-void disableHandle();
-
-bool getStatus();
-float getCelsius();
-void displayTemperature();
-
-#endif
-                    </pre>
-
-                    <pre>
-//time.h
-
-#ifndef TIME_H
-#define TIME_H
-
-#include <stdbool.h>
-
-typedef struct {
-    int minutes;
-    int hours;
-    int days;
-} Time;
-
-extern int gameFrame;
-
-void timeStart();
-void updateTime();
-void displayDay();
-Time getTime();
-bool isDay();
-
-#endif
-                    </pre>
-
-                    <pre>
-//weather.h
-
-#ifndef WEATHER_H
-#define WEATHER_H
-
-#include "raylib.h"
-
-extern const int WEATHER_SUNNY_ID;
-extern const int WEATHER_RAINNING_ID;
-extern const int WEATHER_SNOWING_ID;
-
-extern int current_weather_id;
-extern Color background_color;
-
-void weatherStart();
-void updateWeather();
-void changeWeather(int weatherID);
-void updateSummonRain();
-void updateSummonSnowflake();
-
-#endif
-                    </pre>
-
                 </div>
         
                 <div class="col-md-6 code-snippet">
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
+                    <div class="bg-success text-white p-2 mb-2">
+                        <h3 class="m-0">ภาพตัวอย่างการทำงาน</h3>
+                    </div>
                     <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid2">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid3">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid4">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid5">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid6">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid7">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid8">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid9">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid10">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid11">
-
-                    <h3>ภาพตัวอย่างการทำงาน</h3>
-                    <img src="https://via.placeholder.com/600x400" alt="Project screenshot" class="img-fluid12">
                 </div>
             </div>
         </section>
+        
         
     </div>
 <!-- Demo -->
