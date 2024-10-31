@@ -18,7 +18,7 @@
   https://psrct.github.io/
 
 ## Poster
-
+  <img src="image/poster.png" width="500" height="500" alt="poster />
 ## Video
 
 ## Library ที่ใช้
