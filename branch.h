@@ -11,6 +11,7 @@ typedef struct {
 typedef struct {
     int id;
     Vector2 pos;
+    bool collectable;
 } Product;
 
 struct Branch;
@@ -44,6 +45,8 @@ extern int branch_count;
 extern Product* product_list;
 extern int product_count;
 
+extern int health;
+
 void displayWarning();
 
 void branchStart();
@@ -51,6 +54,9 @@ void branchStart();
 void updateBranchCreating();    // Updates branch that are during the creating
 void updateBranch();            // Updates branch that already exist
 void updateBranchMenu();        // Updates branch menu when selected
+void updateLeaves();            // Updates branch leaves
+void updateProducts();          // Updates branch flower and fruit    
+void updateCollectApple();
 
 void addBranchSize(float size);
 void branchAdd(Vector2 pos, float rotation, Branch* parent); // Build a branch after select the rotation
@@ -66,5 +72,14 @@ int branchCounting(int id);                                  // For counting bra
 void buildLeaves(int id);
 void buildFlower(int id);
 void buildBuilding(int id);
+
+void productRemove(int id);
+void productAdd(int id);
+
+void backToTree();
+void displayBackToTree();
+
+void health_cal();
+void displayHealth();
 
 #endif
