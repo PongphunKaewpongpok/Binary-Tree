@@ -39,11 +39,6 @@ int main(void) {
     weatherStart();
     
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_R)) {
-            changeWeather(WEATHER_RAINNING_ID);
-        } else if (IsKeyPressed(KEY_S)) {
-            changeWeather(WEATHER_SNOWING_ID);
-        }
         mouse_pos = GetMousePosition();
         updateMusic();
 
