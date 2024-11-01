@@ -45,22 +45,22 @@ Texture2D TEXTURE_ICON_NIGHTTIME;
 Vector2 mouse_pos;
 
 void initTexture2D() {
-    TEXTURE_BUTTON_ADD_BRANCH           = LoadTexture("Resources/button/add_button.png");
-    TEXTURE_BUTTON_ADD_LEAVE            = LoadTexture("Resources/button/add_leave.png");
-    TEXTURE_BUTTON_ADD_FLOWER           = LoadTexture("Resources/button/add_flower.png");
-    TEXTURE_BUTTON_ADD_FRUIT            = LoadTexture("Resources/button/add_fruit.png");
-    TEXTURE_BUTTON_REMOVE_BRANCH        = LoadTexture("Resources/button/remove_button.png");
-    TEXTURE_BUTTON_REMOVE_LEAVE         = LoadTexture("Resources/button/remove_leave.png");
-    TEXTURE_BUTTON_REMOVE_FLOWER        = LoadTexture("Resources/button/remove_flower.png");
-    TEXTURE_BUTTON_REMOVE_FRUIT         = LoadTexture("Resources/button/remove_fruit.png");
-    TEXTURE_BUTTON_CANT_ADD_BRANCH      = LoadTexture("Resources/button/cant_add_button.png");
-    TEXTURE_BUTTON_CANT_ADD_LEAVE       = LoadTexture("Resources/button/cant_add_leave.png");
-    TEXTURE_BUTTON_CANT_ADD_FLOWER      = LoadTexture("Resources/button/cant_add_flower.png");
-    TEXTURE_BUTTON_CANT_ADD_FRUIT       = LoadTexture("Resources/button/cant_add_fruit.png");
-    TEXTURE_BUTTON_CANT_REMOVE_BRANCH   = LoadTexture("Resources/button/cant_remove_button.png");
-    TEXTURE_BUTTON_BACK_TO_TREE         = LoadTexture("Resources/button/back_to_tree.png");
-    TEXTURE_BUTTON_YES_BUTTON           = LoadTexture("Resources/button/yes_button.png");
-    TEXTURE_BUTTON_NO_BUTTON            = LoadTexture("Resources/button/no_button.png");
+    TEXTURE_BUTTON_ADD_BRANCH           = LoadTexture("Resources/buttons/add_button.png");
+    TEXTURE_BUTTON_ADD_LEAVE            = LoadTexture("Resources/buttons/add_leave.png");
+    TEXTURE_BUTTON_ADD_FLOWER           = LoadTexture("Resources/buttons/add_flower.png");
+    TEXTURE_BUTTON_ADD_FRUIT            = LoadTexture("Resources/buttons/add_fruit.png");
+    TEXTURE_BUTTON_REMOVE_BRANCH        = LoadTexture("Resources/buttons/remove_button.png");
+    TEXTURE_BUTTON_REMOVE_LEAVE         = LoadTexture("Resources/buttons/remove_leave.png");
+    TEXTURE_BUTTON_REMOVE_FLOWER        = LoadTexture("Resources/buttons/remove_flower.png");
+    TEXTURE_BUTTON_REMOVE_FRUIT         = LoadTexture("Resources/buttons/remove_fruit.png");
+    TEXTURE_BUTTON_CANT_ADD_BRANCH      = LoadTexture("Resources/buttons/cant_add_button.png");
+    TEXTURE_BUTTON_CANT_ADD_LEAVE       = LoadTexture("Resources/buttons/cant_add_leave.png");
+    TEXTURE_BUTTON_CANT_ADD_FLOWER      = LoadTexture("Resources/buttons/cant_add_flower.png");
+    TEXTURE_BUTTON_CANT_ADD_FRUIT       = LoadTexture("Resources/buttons/cant_add_fruit.png");
+    TEXTURE_BUTTON_CANT_REMOVE_BRANCH   = LoadTexture("Resources/buttons/cant_remove_button.png");
+    TEXTURE_BUTTON_BACK_TO_TREE         = LoadTexture("Resources/buttons/back_to_tree.png");
+    TEXTURE_BUTTON_YES_BUTTON           = LoadTexture("Resources/buttons/yes_button.png");
+    TEXTURE_BUTTON_NO_BUTTON            = LoadTexture("Resources/buttons/no_button.png");
 
     TEXTURE_BRANCH                      = LoadTexture("Resources/branch.png");
     TEXTURE_BRANCH_SELECTED             = LoadTexture("Resources/branch_selected.png");
