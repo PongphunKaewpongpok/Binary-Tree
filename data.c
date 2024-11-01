@@ -6,11 +6,11 @@
 #include "string.h"
 
 // Permanently Token
-int applesToken         = 10000000;
+int applesToken         = 0;
 
 // Temporary Token
-double waterToken       = 10000000;
-double sunlightToken    = 10000000;
+double waterToken       = 100;
+double sunlightToken    = 100;
 
 void displayTokens() {
     DrawTexture(TEXTURE_TOKEN_BACKGROUND, 300, 10, WHITE);
