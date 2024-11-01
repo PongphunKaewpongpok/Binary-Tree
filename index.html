@@ -46,7 +46,7 @@
 #define DrawTextExA WinAPICDrawTextExA
 #define PlaySoundA WinAPICPlaySoundA
 
-#include <windows.h>
+#include &lt;windows.h&gt;
 
 #undef CloseWindow  // ลบ CloseWindow จาก windows.h เพื่อไม่ให้ประกาศชนกับ raylib.h
 #undef ShowCursor   // ลบ ShowCursor จาก windows.h เพื่อไม่ให้ประกาศชนกับ raylib.h
@@ -58,8 +58,8 @@
 #undef Rectangle    // ลบ Rectangle จาก windows.h เพื่อไม่ให้ประกาศชนกับ raylib.h
 #endif
 
-#include <stdio.h>
-#include <stdbool.h>
+#include &lt;stdio.h&gt;
+#include &lt;stdbool.h&gt;
 
 static HANDLE hSerial;
 static DCB dcbSerialParams = {0};
@@ -115,14 +115,14 @@ float getCelsius() {
 #include "branch.h"
 
 #include "raylib.h"
-#include <stdbool.h>
+#include &lt;stdbool.h&gt;
 #include "stddef.h"
 #include "basic_math.h"
 #include "custom_raylib.h"
 #include "drag_screen.h"
 #include "declaration.h"
 #include "time.h"
-#include <stdlib.h>
+#include &lt;stdlib.h&gt;
 #include "data.h"
 
 #include "stdio.h"
