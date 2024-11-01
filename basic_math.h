@@ -11,5 +11,6 @@ float degreesToRadians(float degrees);
 Vector2 getMovingPoint(float x1, float y1, float rotation, float distance);
 int randomNumber(int min, int max);
 void shortFormToken(char *text, int tokenCount);
+Vector2 getRandomPositionCircle(Vector2 pos, float radius);
 
 #endif
