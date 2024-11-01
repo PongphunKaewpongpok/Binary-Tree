@@ -1,9 +1,9 @@
 #include "temperature.h"
 
 #include "raylib.h"
-#include "stdlib.h"
-#include "stdbool.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 #include "time.h"
 #include "declaration.h"
@@ -14,7 +14,8 @@
 #include "weather.h"
 #include "data.h"
 #include "temperature.h"
-#include "string.h"
+#include <string.h>
+#include "event.h"
 
 int main(void) {
     char *portName = "\\\\.\\COM3";
@@ -39,6 +40,13 @@ int main(void) {
     weatherStart();
     
     while (!WindowShouldClose()) {
+        if (health <= 0) {
+            BeginDrawing();     // Starting Draw Elements This Frame.
+            ClearBackground(BLACK);
+            DrawText("Game Over", SCREENWIDTH/2-MeasureText("Game Over", 100), SCREENHEIGHT/2, 100, RED);
+            EndDrawing();       // Ending Drawing Elements This Frame.
+            continue;
+        }
         mouse_pos = GetMousePosition();
         updateMusic();
 
@@ -49,11 +57,16 @@ int main(void) {
         drawing_map();      // Starting Draw Ground & Cloud
 
         updateBranch();
+        updateEvent();
         updateLightSource();
         update_fading();
         
         displayDay();           // Display Current Day
         displayTokens();        // Display Tokens
+        backToTree();
+        displayBackToTree();
+        health_cal();
+        displayHealth();
 
         DrawText(temperatureText, 29, SCREENHEIGHT-71, 50, BLACK); // Shadow
         DrawText(temperatureText, 25, SCREENHEIGHT-75, 50, getStatus() ? WHITE : RED); // Display Temperature
@@ -61,6 +74,9 @@ int main(void) {
         gameFrame++;
         if (gameFrame >= 60) {
             gameFrame = 0;
+            if (getCurrentEvent() == EVENT_ID_FLOOD) {
+                health -= 1;
+            }
             updateTime();   // Update Time
             if (getStatus()) {
                 sprintf(temperatureText, "%.2f °C", getCelsius());
