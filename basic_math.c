@@ -50,3 +50,11 @@ void shortFormToken(char *text, int tokenCount) {
         sprintf(text, "%.1f%c", tokenCountFloat, short_form[count-1]);
     }
 }
+
+Vector2 getRandomPositionCircle(Vector2 pos, float radius) {
+    float distance = sqrt((float)rand() / RAND_MAX) * radius;
+    float angle = ((float)rand() / RAND_MAX) * 2.0f * (float)M_PI;
+
+    Vector2 randomPos = {pos.x + distance * cos(angle), pos.y + distance * sin(angle)};
+    return randomPos;
+}
