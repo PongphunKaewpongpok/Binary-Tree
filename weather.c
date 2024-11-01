@@ -3,10 +3,11 @@
 #include "raylib.h"
 #include <stdio.h>
 #include "custom_raylib.h"
-#include "stddef.h"
+#include <stddef.h>
 #include "drag_screen.h"
 #include "basic_math.h"
 #include "declaration.h"
+#include "data.h"
 
 const int WEATHER_SUNNY_ID = 0;
 const int WEATHER_RAINNING_ID = 1;
@@ -28,6 +29,16 @@ Color fading_value;
 
 const Vector2 RAINDROPORIGIN = {2.5, 0};
 
+void randomWeather() {
+    if (randomNumber(0, 10000) == 130) {
+        changeWeather(WEATHER_RAINNING_ID);
+    } else if (randomNumber(0, 10000) == 1011) {
+        changeWeather(WEATHER_SUNNY_ID);
+    } else if (randomNumber(0, 10000) == 1302) {
+        changeWeather(WEATHER_SNOWING_ID);
+    }
+}
+
 void weatherStart() {
     for (int i = 0; i < 20; i++) {
         particle_pos[i].x = -100;
@@ -37,6 +48,7 @@ void weatherStart() {
 }
 
 void updateWeather() {
+    randomWeather();
     ClearBackground(background_color);
 
     if (current_weather_id == WEATHER_SUNNY_ID) {
@@ -52,6 +64,9 @@ void updateWeather() {
             frameFadingCount++;
         }
     } else if (current_weather_id == WEATHER_RAINNING_ID) {
+        if (randomNumber(0, 10) == 1) {
+            waterToken++;
+        }
         if (frameFadingCount != 0 && colorEqualsNoAlpha(background_color, WEATHER_BACKGROUND_RAINNING)) {
             frameFadingCount = 0;
             fadingParticle = 255;
