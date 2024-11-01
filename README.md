@@ -24,7 +24,13 @@
 
 ## Library ที่ใช้
 * #### Raylib.h
+* #### Time.h
+* #### Stddef.h
 * #### Stdbool.h
+* #### Stdio.h
+* #### Stdlib.h
+* #### Math.h
+* #### String.h
 
 ## สมาชิกกลุ่ม
 | รหัสนักศึกษา | ชื่อ - นามสกุล |  
