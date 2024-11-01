@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include <stdbool.h>
-#include "stddef.h"
+#include <stddef.h>
 #include "basic_math.h"
 #include "custom_raylib.h"
 #include "drag_screen.h"
@@ -10,9 +10,13 @@
 #include "time.h"
 #include <stdlib.h>
 #include "data.h"
+#include <string.h>
+#include "sound.h"
+#include "weather.h"
+#include "event.h"
 
-#include "stdio.h"
-#include "math.h"
+#include <stdio.h>
+#include <math.h>
 
 const int BRANCHWIDTH = 40;
 const int BRANCHHEIGHT = 100;
@@ -36,7 +40,13 @@ Product* product_list;
 int product_count = 0;
 int product_capacity = 0;
 
+char warningText[40];
 int warning_count = 0;
+
+bool back_to_tree = false;
+
+int health = 50;
+int max_health = 50;
 
 Rectangle addButtonRect;
 Rectangle deleteButtonRect;
@@ -44,11 +54,48 @@ Rectangle leaveButtonRect;
 Rectangle temButton1Rect;
 Rectangle temButton2Rect;
 
+void health_cal() {
+    max_health = branch_count*50;
+    if (health < max_health) {
+        int temHP = min(max_health-health, applesToken);
+        applesToken -= temHP;
+        health += temHP;
+        if (temHP != 0) {
+            PlaySound(COLLECT_APPLE);
+        }
+    }
+}
+
+void waterTokenCal() {
+    if (flood_left != 0) {
+        waterToken = flood_left;
+    }
+}
+
+void displayHealth() {
+    DrawRectangle(450, 845, 700, 40, BLACK);
+    DrawRectangle(450, 845, 700*health/max_health, 40, RED);
+    char healthText[7];
+    char maxHealthText[7];
+    shortFormToken(healthText, health);
+    shortFormToken(maxHealthText, max_health);
+
+    DrawText(healthText, 755-MeasureText(healthText, 30), 851, 30, WHITE);
+    DrawText("/", 800-MeasureText("/", 30), 851, 30, WHITE);
+    DrawText(maxHealthText, 850-MeasureText(maxHealthText, 30), 851, 30, WHITE);
+}
+
 void branchStart() {
     branch_list = malloc(branch_capacity * sizeof(Branch));
     if (branch_list == NULL) {
         printf("Failed to initialize branch_list!\n");
-        exit(1); // Exit the program if memory allocation fails
+        exit(1);
+    }
+
+    product_list = malloc(product_capacity * sizeof(Product));
+    if (product_list == NULL) {
+        printf("Failed to initialize product_list!\n");
+        exit(1);
     }
 }
 
@@ -56,6 +103,12 @@ void updateLeaves() {
     for (int i = branch_count-1; i >= 0; i--) {
         Vector2 center;
         if (branch_list[i].is_leaves) {
+            if (randomNumber(0, 10) == 1 && isDay() && current_weather_id == WEATHER_SUNNY_ID) {
+                sunlightToken++;
+            }
+            if (randomNumber(0, 100) == 1 && !isDay() && current_weather_id == WEATHER_SUNNY_ID) {
+                waterToken++;
+            }
             center = getMovingPoint(branch_list[i].pos.x+screen_pos.x,
                                     branch_list[i].pos.y+screen_pos.y,
                                     branch_list[i].rotation+90,
@@ -64,10 +117,52 @@ void updateLeaves() {
                   center.x+100*branch_list[i].size     < -SCREENWIDTH  ||  // Left
                   center.y-100*branch_list[i].size     > SCREENHEIGHT  ||  // Down
                   center.y+100*branch_list[i].size     < -SCREENHEIGHT))   // Up
-            { 
-                
+            {
                 DrawCircleV(center, 100*branch_list[i].size, (Color){0, 70+5*branch_list[i].id%20, 0, 255});
             }
+        }
+    }
+}
+
+void updateProducts() {
+    for (int i = product_count-1; i >= 0; i--) {
+        Vector2 center = {product_list[i].pos.x+screen_pos.x, product_list[i].pos.y+screen_pos.y};
+        if (branch_list[product_list[i].id].is_flower) {
+            DrawTexturePro(
+                TEXTURE_FLOWER,
+                (Rectangle){0, 0, 50, 50},
+                (Rectangle){center.x, center.y, 50, 50},
+                (Vector2){25, 25},
+                0.0f,
+                WHITE
+            );
+        }
+        if (branch_list[product_list[i].id].is_fruit && product_list[i].collectable) {
+            Rectangle checkRect = {center.x-25, center.y-25, 50, 50};
+            DrawTexturePro(
+                TEXTURE_APPLE_TOKEN, 
+                (Rectangle){0, 0, 50, 50},
+                (Rectangle){center.x, center.y, 50, 50},
+                (Vector2){25, 25},
+                0.0f,
+                !(CheckCollisionPointRec(mouse_pos, checkRect)) ? WHITE : (Color){160, 255, 255, 255}
+            );
+        }
+        if (branch_list[product_list[i].id].is_fruit && !product_list[i].collectable) {
+            if (randomNumber(1, 1000) == 1) {
+                product_list[i].collectable = true;
+            }
+        }
+    }
+}
+
+void updateCollectApple() {
+    for (int i = product_count-1; i >= 0; i--) {
+        Rectangle temRect = {product_list[i].pos.x+screen_pos.x-25, product_list[i].pos.y+screen_pos.y-25, 50, 50};
+        if (CheckCollisionPointRec(mouse_pos, temRect) && product_list[i].collectable) {
+            product_list[i].collectable = false;
+            PlaySound(COLLECT_APPLE);
+            applesToken += 1;
         }
     }
 }
@@ -137,6 +232,8 @@ void updateBranch() {
         }
     }
 
+    updateProducts();
+
     if (warning_count != 0) {
         displayWarning(); // Warning Deleted Branch
     }
@@ -155,8 +252,6 @@ void branchAdd(Vector2 pos, float rotation, Branch* parent) {
         if (new_list != NULL) {
             branch_list = new_list;
         } else {
-            // Handle memory allocation failure if necessary
-            // For now, we just leave branch_list unchanged
             printf("Memory allocation failed for branch_list!\n");
         }
     }
@@ -199,6 +294,13 @@ void branchAdd(Vector2 pos, float rotation, Branch* parent) {
 }
 
 void branchRemoveConfirm(int id) {
+    if (branch_list[id].parent != NULL) {
+        if (branch_list[id].parent->child_first == &branch_list[id]) {
+            branch_list[id].parent->child_first = NULL;
+        } else if (branch_list[id].parent->child_second == &branch_list[id]) {
+            branch_list[id].parent->child_second = NULL;
+        }
+    }
     if (branch_list[id].child_first != NULL) {
         branchRemoveConfirm(branch_list[id].child_first->id);
     }
@@ -213,10 +315,46 @@ void branchRemoveConfirm(int id) {
 
 void branchRemoveWarning(int id) {
     warning_count = branchCounting(id);
+    sprintf(warningText, "This action will remove %d branches.", warning_count);
 }
 
 void displayWarning() {
-    
+    DrawTexture(TEXTURE_WARNING_BACKGROUND, 400, 250, WHITE);
+    // Shadow
+    DrawText("Are you sure?", 1100-MeasureText("Are you sure?", 80)+4, 354, 80, BLACK);
+    DrawText(warningText    , 1050-MeasureText(warningText, 30)+4, 494, 30, BLACK);
+
+    // Main
+    DrawText("Are you sure?", 1100-MeasureText("Are you sure?", 80), 350, 80, RED);
+    DrawText(warningText    , 1050-MeasureText(warningText, 30), 490, 30, GRAY);
+
+    DrawTexture(TEXTURE_BUTTON_YES_BUTTON, 600, 600, WHITE);
+    DrawTexture(TEXTURE_BUTTON_NO_BUTTON, 900, 600, WHITE);
+}
+
+void productAdd(int id) {
+    for (int i = 0; i < 5; i++) {
+        if (product_count >= product_capacity) {
+            product_capacity += 10;
+            Product* new_list = realloc(product_list, product_capacity*sizeof(Product));
+            if (new_list != NULL) {
+                product_list = new_list;
+            } else {
+                printf("Memory allocation failed for product_list!\n");
+            }
+        }
+        Vector2 headPos = getMovingPoint(branch_list[id].pos.x, branch_list[id].pos.y,
+                                    branch_list[id].rotation+90, BRANCHHEIGHT*branch_list[id].size);
+        Vector2 temPos = getRandomPositionCircle(headPos, 100);
+        Product temProduct;
+
+        temProduct.id = id;
+        temProduct.pos = temPos;
+        temProduct.collectable = false;
+
+        product_list[product_count] = temProduct;
+        product_count++;
+    }
 }
 
 void productRemove(int id) {
@@ -242,6 +380,8 @@ int branchCounting(int id) { // For counting branch itself and descendants
 }
 
 void branchSelecting(int frameCount) {
+    Rectangle backToTreeRect = {SCREENWIDTH-125, SCREENHEIGHT-125, 100, 100};
+
     if (isBranchCreating) {
         if (frameCount < 10) {
             Vector2 parentHeadPos = getMovingPoint(selectedBranch->pos.x, selectedBranch->pos.y,
@@ -253,9 +393,27 @@ void branchSelecting(int frameCount) {
             sunlightToken -= 100*selectedBranch->id;
             waterToken -= 100*selectedBranch->id;
         }
+    } else if (back_to_tree) {
+        if (CheckCollisionPointRec(mouse_pos, backToTreeRect) && frameCount < 10) {    // Build a Branch
+            back_to_tree = false;
+        }
     } else {
         if (frameCount < 10) { // Clicked
-            if (CheckCollisionPointRec(mouse_pos, addButtonRect) && selectedBranch != NULL) { // Build a Branch
+            updateCollectApple();
+
+            Rectangle yesButtonRect = {600, 600, 100, 100};
+            Rectangle noButtonRect = {900, 600, 100, 100};
+            if (warning_count != 0) {
+                if (CheckCollisionPointRec(mouse_pos, yesButtonRect) && selectedBranch != NULL) {                                     // Confirm Remove Branch
+                    branchRemoveConfirm(selectedBranch->id);
+                    selectedBranch = NULL;
+                    warning_count = 0;
+                } else if (CheckCollisionPointRec(mouse_pos, noButtonRect)  && selectedBranch != NULL) {                               // Cancel Remove Branch
+                    warning_count = 0;
+                }
+            } else if (CheckCollisionPointRec(mouse_pos, backToTreeRect)) {    // Build a Branch
+                back_to_tree = true;
+            } else if (CheckCollisionPointRec(mouse_pos, addButtonRect) && selectedBranch != NULL) {    // Build a Branch
                 if (selectedBranch->child_first != NULL && selectedBranch->child_second != NULL) {
                     return;
                 }
@@ -264,11 +422,12 @@ void branchSelecting(int frameCount) {
                 }
                 branchCreating();
             } else if (CheckCollisionPointRec(mouse_pos, leaveButtonRect) && selectedBranch != NULL) { 
-                if (selectedBranch->is_leaves) {    // Remove Leaves
+                if (selectedBranch->is_leaves) {                                                        // Remove Leaves
                     selectedBranch->is_leaves = false;
                     selectedBranch->is_flower = false;
                     selectedBranch->is_fruit = false;
-                } else {    // Add Leaves
+                    productRemove(selectedBranch->id);
+                } else {                                                                                // Add Leaves
                     if (sunlightToken < 100*selectedBranch->id && waterToken < 100*selectedBranch->id) {
                         return;
                     }
@@ -276,11 +435,35 @@ void branchSelecting(int frameCount) {
                     waterToken -= 100*selectedBranch->id;
                     selectedBranch->is_leaves = true;
                 }
+            } else if (CheckCollisionPointRec(mouse_pos, temButton1Rect) && selectedBranch != NULL) {   
+                if (selectedBranch->is_flower) {                                                        // Remove a Flower
+                    selectedBranch->is_flower = false;
+                    productRemove(selectedBranch->id);
+                } else if (selectedBranch->is_fruit) {                                                  // Remove a Fruit
+                    selectedBranch->is_fruit = false;
+                    productRemove(selectedBranch->id);
+                } else if (!selectedBranch->is_flower && !selectedBranch->is_fruit) {                   // Add a Flower
+                    if (sunlightToken < 100*selectedBranch->id && waterToken < 100*selectedBranch->id) {
+                        return;
+                    }
+                    sunlightToken -= 100*selectedBranch->id;
+                    waterToken -= 100*selectedBranch->id;
+                    selectedBranch->is_flower = true;
+                    productAdd(selectedBranch->id);
+                }
+            } else if (CheckCollisionPointRec(mouse_pos, temButton2Rect) && selectedBranch != NULL) {   
+                if (selectedBranch->is_flower) {                                                        // Upgrade to Fruit
+                    if (sunlightToken < 100*selectedBranch->id && waterToken < 100*selectedBranch->id) {
+                            return;
+                    }
+                    selectedBranch->is_flower = false;
+                    selectedBranch->is_fruit = true;
+                }
             } else if (CheckCollisionPointRec(mouse_pos, deleteButtonRect) && selectedBranch != NULL) { // Remove a Branch
                 if (selectedBranch->parent != NULL) {
                     branchRemoveWarning(selectedBranch->id);
                 }
-            } else if (atMouseBranch != NULL) { // Selected Branch
+            } else if (atMouseBranch != NULL) {                                                         // Selected Branch
                 selectedBranch = atMouseBranch;
             } else {
                 selectedBranch = NULL;
@@ -298,6 +481,8 @@ void updateBranchMenu() {
     Texture2D* temButton1       = NULL; // For Upgrade || Delete
     Texture2D* temButton2       = NULL; // For Upgrade
 
+    int price = 100*selectedBranch->id;
+
     if (selectedBranch->parent != NULL) {
         temDeleteButton = &TEXTURE_BUTTON_REMOVE_BRANCH;
     } else {
@@ -305,14 +490,14 @@ void updateBranchMenu() {
     }
 
     if ((selectedBranch->child_first == NULL || selectedBranch->child_second == NULL)
-        && (sunlightToken >= 100*selectedBranch->id && waterToken >= 100*selectedBranch->id)) {
+        && (sunlightToken >= price && waterToken >= price)) {
         temAddButton = &TEXTURE_BUTTON_ADD_BRANCH;
     } else {
         temAddButton = &TEXTURE_BUTTON_CANT_ADD_BRANCH;
     }
 
     if (!selectedBranch->is_leaves) {
-        if (sunlightToken >= 100*selectedBranch->id && waterToken >= 100*selectedBranch->id) {
+        if (sunlightToken >= price && waterToken >= price) {
             temLeaveButton = &TEXTURE_BUTTON_ADD_LEAVE;
         } else {
             temLeaveButton = &TEXTURE_BUTTON_CANT_ADD_LEAVE;
@@ -321,24 +506,24 @@ void updateBranchMenu() {
         temLeaveButton = &TEXTURE_BUTTON_REMOVE_LEAVE;
     }
 
-    if (!selectedBranch->is_flower && selectedBranch->is_leaves) {
-        if (sunlightToken >= 100*selectedBranch->id && waterToken >= 100*selectedBranch->id) {
+    if (!selectedBranch->is_flower && !selectedBranch->is_fruit && selectedBranch->is_leaves) {
+        if (sunlightToken >= price && waterToken >= price) {
             temButton1 = &TEXTURE_BUTTON_ADD_FLOWER;
         } else {
             temButton1 = &TEXTURE_BUTTON_CANT_ADD_FLOWER;
         }
     } else if (selectedBranch->is_flower) {
         temButton1 = &TEXTURE_BUTTON_REMOVE_FLOWER;
+    } else if (selectedBranch->is_fruit) {
+        temButton1 = &TEXTURE_BUTTON_REMOVE_FRUIT;
     }
 
     if (selectedBranch->is_flower) {
-        if (sunlightToken >= 100*selectedBranch->id && waterToken >= 100*selectedBranch->id) {
+        if (sunlightToken >= price && waterToken >= price) {
             temButton2 = &TEXTURE_BUTTON_ADD_FRUIT;
         } else {
             temButton2 = &TEXTURE_BUTTON_CANT_ADD_FRUIT;
         }
-    } else if (selectedBranch->is_fruit) {
-        temButton2 = &TEXTURE_BUTTON_REMOVE_FRUIT;
     }
     
     Vector2 headPos = getMovingPoint(selectedBranch->pos.x, selectedBranch->pos.y,
@@ -412,17 +597,44 @@ void updateBranchMenu() {
         0.0f,
         !(CheckCollisionPointRec(mouse_pos, deleteButtonRect)) ? WHITE : (Color){150, 150, 150, 150}
     );
+    // Price
+    char priceText[6];
+    shortFormToken(priceText, price);
+
+    // Price Shadow
+    DrawText(priceText, headPos.x-50-MeasureText(priceText, 40)+4, headPos.y-16, 40, BLACK);
+    DrawText(priceText, headPos.x+80-MeasureText(priceText, 40)+4, headPos.y-16, 40, BLACK);
 
     // Price
-    // Shadow
-    DrawText(sunlightText, 450-10*strlen(sunlightText)+4, 21, 40, BLACK);
-    DrawText(waterText, 800-10*strlen(waterText)+4, 21, 40, BLACK);
-    DrawText(applesText, 1150-10*strlen(applesText)+4, 21, 40, BLACK);
+    if (price <= sunlightToken) {
+        DrawText(priceText, headPos.x-50-MeasureText(priceText, 40), headPos.y-20, 40, YELLOW);
+    } else {
+        DrawText(priceText, headPos.x-50-MeasureText(priceText, 40), headPos.y-20, 40, RED);
+    }
 
-    // Main
-    DrawText(sunlightText, 450-10*strlen(sunlightText), 17, 40, YELLOW);
-    DrawText(waterText, 800-10*strlen(waterText), 17, 40, (Color){135, 255, 255, 255});
-    DrawText(applesText, 1150-10*strlen(applesText), 17, 40, RED);
+    if (price <= waterToken) {
+        DrawText(priceText, headPos.x+80-MeasureText(priceText, 40), headPos.y-20, 40, (Color){135, 255, 255, 255});
+    } else {
+        DrawText(priceText, headPos.x+80-MeasureText(priceText, 40), headPos.y-20, 40, RED);
+    }
+
+    // Token Shadow
+    DrawTexture(TEXTURE_SUN_TOKEN, headPos.x-41, headPos.y-16, BLACK);
+    DrawTexture(TEXTURE_WATER_TOKEN, headPos.x+88, headPos.y-23, BLACK);
+
+    // Token
+    if (price <= sunlightToken) {
+        DrawTexture(TEXTURE_SUN_TOKEN, headPos.x-45, headPos.y-20, WHITE);
+    } else {
+        DrawTexture(TEXTURE_SUN_TOKEN, headPos.x-45, headPos.y-20, RED);
+    }
+
+    if (price <= waterToken) {
+        DrawTexture(TEXTURE_WATER_TOKEN, headPos.x+84, headPos.y-27, WHITE);
+    } else {
+        DrawTexture(TEXTURE_WATER_TOKEN, headPos.x+84, headPos.y-27, RED);
+    }
+    
 }
 
 void branchCreating() {
@@ -457,4 +669,27 @@ void updateBranchCreating() {
         branchCreatingRotation-180,
         (Color){0, 255, 255, 255}
     );
+}
+
+void backToTree() {
+    if (back_to_tree) {
+        int temX = (screen_pos.x > 100) ? -100 : (screen_pos.x < -100) ? 100 : 0;
+        int temY = (screen_pos.y > 100) ? -100 : 0;
+        if (temX == 0 && temY == 0) {
+            back_to_tree = false;
+            return;
+        }
+        drag_screen = true;
+        ground_moving(temX, temY);
+        cloud_moving(temX, temY);
+        update_screen_pos(temX, temY);
+        drag_screen = false;
+    }
+    
+}
+
+void displayBackToTree() {
+    Rectangle temRect = {SCREENWIDTH-125, SCREENHEIGHT-125, 100, 100};
+    DrawTexturePro(TEXTURE_BUTTON_BACK_TO_TREE, (Rectangle){0, 0, 50, 50}, temRect, (Vector2){0, 0},
+                    0.0f, !(CheckCollisionPointRec(mouse_pos, temRect)) ? WHITE : (Color){150, 150, 150, 150});
 }
