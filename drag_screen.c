@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include "declaration.h"
-#include "stdbool.h"
+#include <stdbool.h>
 #include "branch.h"
 #include "basic_math.h"
 
