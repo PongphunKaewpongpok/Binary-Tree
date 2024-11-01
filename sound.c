@@ -12,6 +12,8 @@ Music BGM_WHISPERS_OF_THE_RAIN;
 Music BGM_GARDEN_OF_FROST;
 Music BGM_MIDNIGHT_GARDEN;
 
+Sound COLLECT_APPLE;
+
 Music *current_playing_bgm = NULL;
 float current_volume = 0;
 
@@ -20,6 +22,9 @@ void initMusic() {
     BGM_WHISPERS_OF_THE_RAIN    = LoadMusicStream("Sounds/Whispers_of_the_Rain.mp3");
     BGM_GARDEN_OF_FROST         = LoadMusicStream("Sounds/Garden_of_Frost.mp3");
     BGM_MIDNIGHT_GARDEN         = LoadMusicStream("Sounds/Midnight_Garden.mp3");
+    COLLECT_APPLE               = LoadSound("Sounds/collect_apple.mp3");
+
+    SetSoundVolume(COLLECT_APPLE, 0.5);
 }
 
 void unloadAllMusic() {
@@ -27,6 +32,7 @@ void unloadAllMusic() {
     UnloadMusicStream(BGM_WHISPERS_OF_THE_RAIN);
     UnloadMusicStream(BGM_GARDEN_OF_FROST);
     UnloadMusicStream(BGM_MIDNIGHT_GARDEN);
+    UnloadSound(COLLECT_APPLE);
 }
 
 void updateMusic() {
